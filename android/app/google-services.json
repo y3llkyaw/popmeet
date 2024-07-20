@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "635278796928",
+    "project_id": "popmeet1-344dd",
+    "storage_bucket": "popmeet1-344dd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:635278796928:android:c6bf65b57d0043dfde1e65",
+        "android_client_info": {
+          "package_name": "com.example.pop_meet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7EMjr7BlbMzHsHto7wj0mKj7KHdRFVYQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:635278796928:android:e5c935bee728b217de1e65",
+        "android_client_info": {
+          "package_name": "com.example.popmeet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7EMjr7BlbMzHsHto7wj0mKj7KHdRFVYQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:635278796928:android:d82260773390edd1de1e65",
+        "android_client_info": {
+          "package_name": "com.popmeet.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7EMjr7BlbMzHsHto7wj0mKj7KHdRFVYQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
