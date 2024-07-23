@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:popmeet/data/datasources/post_datasource.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:popmeet/data/datasources/profile_datasource.dart';
 import 'package:popmeet/presentation/blocs/post/post_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -16,6 +16,7 @@ class PostDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final postBloc = BlocProvider.of<PostBloc>(context);
     if (profile == null) {
       final profile = ProfileDatasource.getProfileById(post.userId);
     }
@@ -62,38 +63,52 @@ class PostDetail extends StatelessWidget {
                             showDialog(
                                 context: context,
                                 builder: (context) {
-                                  return SizedBox(
-                                    height: MediaQuery.of(context).size.height *
-                                        0.01,
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        const Text(
-                                          "Are you sure you want to delete this post ?",
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              color: Colors.white),
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            ElevatedButton(
-                                                onPressed: () {
-                                                  BlocProvider.of<PostBloc>(
-                                                          context)
-                                                      .add(DeletePostEvent(
-                                                          post: post));
-                                                  Navigator.pop(context);
-                                                  Navigator.pop(context);
-                                                },
-                                                child: const Text("Yes")),
-                                            ElevatedButton(
-                                                onPressed: () {},
-                                                child: const Text("No")),
-                                          ],
-                                        )
-                                      ],
+                                  return BlocListener<PostBloc, PostState>(
+                                    bloc: postBloc,
+                                    listener: (context, state) {
+                                      if (state is PostDeleted) {
+                                        Fluttertoast.showToast(
+                                            msg: "Post Deleted !");
+                                        postBloc.add(GetPostsEvent(
+                                            uid: FirebaseAuth
+                                                .instance.currentUser!.uid));
+                                        Navigator.pop(context);
+                                        Navigator.pop(context);
+                                      }
+                                    },
+                                    child: SizedBox(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.01,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          const Text(
+                                            "Are you sure you want to delete this post ?",
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                color: Colors.white),
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              ElevatedButton(
+                                                  onPressed: () {
+                                                    BlocProvider.of<PostBloc>(
+                                                            context)
+                                                        .add(DeletePostEvent(
+                                                            post: post));
+                                                  },
+                                                  child: const Text("Yes")),
+                                              ElevatedButton(
+                                                  onPressed: () {},
+                                                  child: const Text("No")),
+                                            ],
+                                          )
+                                        ],
+                                      ),
                                     ),
                                   );
                                 });

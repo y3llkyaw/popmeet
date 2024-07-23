@@ -7,5 +7,5 @@ abstract class ProfileRepository {
 
   Future<void> updateBio(String name);
 
-  
+  Future<String?> updateAvatar(String imagePath);
 }

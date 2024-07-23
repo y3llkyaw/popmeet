@@ -30,7 +30,17 @@ class UpdateBioEvent extends ProfileEvent {
   const UpdateBioEvent({required this.bio});
 }
 
+class UpdateAvatarEvent extends ProfileEvent {
+  final String image;
+  const UpdateAvatarEvent({required this.image});
+}
+
 class GetProfileEvent extends ProfileEvent {
   final String uid;
   const GetProfileEvent({required this.uid});
+}
+
+class GetAllProfilesEvent extends ProfileEvent {
+  final String uid;
+  const GetAllProfilesEvent(this.uid);
 }

@@ -6,7 +6,7 @@ class Profile extends User {
   String photoPath;
   String? bio;
   Genders gender;
-  
+
   Profile({
     required super.id,
     required super.email,

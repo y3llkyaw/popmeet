@@ -26,3 +26,9 @@ final class ProfileError extends ProfileState {
 final class ProfileUpdating extends ProfileState {}
 
 final class ProfileUpdateSuccess extends ProfileState {}
+
+final class ProfilesLoaded extends ProfileState {
+  ProfileModel userProfile;
+  List<Profile> profiles;
+  ProfilesLoaded({required this.profiles, required this.userProfile});
+}

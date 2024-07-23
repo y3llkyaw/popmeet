@@ -59,14 +59,13 @@ class PostComponent extends StatelessWidget {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => Scaffold(
-                                              appBar: AppBar(
-                                                title:
-                                                    Text(profile!.name),
-                                              ),
-                                              body: ProfilePage(
-                                                uid: profile!.id,
-                                              ),
-                                            )));
+                                                  appBar: AppBar(
+                                                    title: Text(profile!.name),
+                                                  ),
+                                                  body: ProfilePage(
+                                                    profile: profile!,
+                                                  ),
+                                                )));
                                   },
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold,

@@ -5,8 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:popmeet/presentation/blocs/post/post_bloc.dart';
+import 'package:popmeet/presentation/blocs/profile/profile_bloc.dart';
 import 'package:popmeet/presentation/pages/home/home_page.dart';
 import 'package:popmeet/presentation/pages/home/profile_page.dart';
+import 'package:popmeet/presentation/pages/home/people_page.dart';
 import 'package:popmeet/presentation/pages/post/addPost.dart';
 
 class AppView extends StatefulWidget {
@@ -22,6 +24,9 @@ class _AppViewState extends State<AppView> {
   @override
   Widget build(BuildContext context) {
     final postBloc = BlocProvider.of<PostBloc>(context);
+    final profileBloc = BlocProvider.of<ProfileBloc>(context);
+    profileBloc
+        .add(GetAllProfilesEvent(FirebaseAuth.instance.currentUser!.uid));
     return Scaffold(
       bottomNavigationBar: ClipRRect(
         borderRadius: const BorderRadius.only(
@@ -55,6 +60,15 @@ class _AppViewState extends State<AppView> {
                 icon: Transform(
                   transform: Matrix4.translationValues(0, 10, 0),
                   child: const Icon(
+                    CupertinoIcons.person_2_fill,
+                  ),
+                ),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Transform(
+                  transform: Matrix4.translationValues(0, 10, 0),
+                  child: const Icon(
                     CupertinoIcons.profile_circled,
                   ),
                 ),
@@ -64,10 +78,19 @@ class _AppViewState extends State<AppView> {
       ),
       body: [
         const SafeArea(child: Home()),
-        SafeArea(
-            child: ProfilePage(
-          uid: FirebaseAuth.instance.currentUser!.uid,
-        )),
+        const SafeArea(child: PeoplePage()),
+        BlocBuilder<ProfileBloc, ProfileState>(
+          builder: (context, state) {
+            if (state is ProfilesLoaded) {
+              return SafeArea(
+                  child: ProfilePage(
+                profile: state.userProfile,
+              ));
+            } else {
+              return const Center(child: CircularProgressIndicator());
+            }
+          },
+        ),
       ][selectedIndex],
       floatingActionButton: FloatingActionButton.small(
         tooltip: 'Add Post',

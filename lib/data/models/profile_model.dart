@@ -23,4 +23,17 @@ class ProfileModel extends Profile {
         photoPath: data['photoURL'],
         bio: data['bio']);
   }
+
+  factory ProfileModel.fromMap(DocumentSnapshot doc) {
+    final map = doc.data() as Map<String, dynamic>;
+    return ProfileModel(
+      id: doc.id,
+      email: map['email'],
+      name: map['displayName'],
+      gender: Genders.values
+          .firstWhere((element) => element.toString() == map['gender']),
+      photoPath: map['photoURL'],
+      bio: map['bio'],
+    );
+  }
 }

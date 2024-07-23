@@ -6,6 +6,7 @@ import 'package:popmeet/data/datasources/profile_datasource.dart';
 import 'package:popmeet/data/models/profile_model.dart';
 import 'package:popmeet/domain/entities/profile.dart';
 import 'package:popmeet/domain/usecases/profile/createProfile_usecase.dart';
+import 'package:popmeet/domain/usecases/profile/updateAvatar_usecase.dart';
 import 'package:popmeet/domain/usecases/profile/updateBio_usecase.dart';
 import 'package:popmeet/domain/usecases/profile/updateDisplayName_usecase.dart';
 
@@ -16,9 +17,14 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final CreateprofileUsecase _createprofileUsecase;
   final UpdatedisplaynameUsecase _updatedisplaynameUsecase;
   final UpdatebioUsecase _updatebioUsecase;
+  final UpdateAvatarUsecase _updateavatarUsecase;
+
   ProfileBloc(this._createprofileUsecase, this._updatedisplaynameUsecase,
-      this._updatebioUsecase)
+      this._updatebioUsecase, this._updateavatarUsecase)
       : super(ProfileInitial()) {
+    on<ProfileEvent>((event, emit) async {
+      print(event.toString());
+    });
     on<CreateProfileEvent>((event, emit) async {
       emit(ProfileLoading());
       print('emmited loading');
@@ -41,12 +47,25 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       }
     });
 
-    on<GetProfileEvent>((event, emit) async {
+    // on<GetProfileEvent>((event, emit) async {
+    //   emit(ProfileLoading());
+    //   try {
+    //     final p = await ProfileDatasource.getProfileById(event.uid);
+    //     if (p != null) {
+    //       emit(ProfileLoaded(profile: p));
+    //     }
+    //   } catch (e) {
+    //     emit(ProfileError(message: e.toString()));
+    //   }
+    // });
+
+    on<GetAllProfilesEvent>((event, emit) async {
       emit(ProfileLoading());
       try {
-        final p = await ProfileDatasource.getProfileById(event.uid);
-        if (p != null) {
-          emit(ProfileLoaded(profile: p));
+        final userProfile = await ProfileDatasource.getProfileById(event.uid);
+        final profiles = await ProfileDatasource.getAllProfiles();
+        if (userProfile != null && profiles != null) {
+          emit(ProfilesLoaded(profiles: profiles, userProfile: userProfile));
         }
       } catch (e) {
         emit(ProfileError(message: e.toString()));
@@ -72,6 +91,20 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
           await _updatebioUsecase.call(event.bio);
+        }
+        emit(ProfileUpdateSuccess());
+      } catch (e) {
+        emit(ProfileError(message: e.toString()));
+      }
+    });
+
+    on<UpdateAvatarEvent>((event, emit) async {
+      emit(ProfileUpdating());
+      print("updating");
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          await _updateavatarUsecase.call(event.image);
         }
         emit(ProfileUpdateSuccess());
       } catch (e) {

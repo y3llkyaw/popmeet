@@ -41,6 +41,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       try {
         final profilePosts = await _getpostsbyuidUsecase.call(event.uid);
         final allPosts = await _getallpostUsecase.call();
+        print(profilePosts);
         emit(PostSuccess(profilePost: profilePosts, posts: allPosts));
       } catch (e) {
         print(e.toString());
@@ -51,7 +52,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     on<DeletePostEvent>((event, emit) async {
       emit(PostLoading());
       try {
-        PostDatasource.deletePost(event.post);
+        await PostDatasource.deletePost(event.post);
         emit(PostDeleted());
       } catch (e) {
         print(e.toString());

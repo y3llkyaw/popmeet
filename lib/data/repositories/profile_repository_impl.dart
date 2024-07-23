@@ -22,4 +22,9 @@ class ProfileRepositoryImpl implements ProfileRepository {
   Future<void> updateBio(String name) {
     return _profileDataSource.updateBio(name);
   }
+
+  @override
+  Future<String?> updateAvatar(String imagePath) {
+    return _profileDataSource.uploadAvatar(imagePath);
+  }
 }

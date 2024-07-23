@@ -18,6 +18,7 @@ import 'package:popmeet/domain/usecases/posts/createPost_usecase.dart';
 import 'package:popmeet/domain/usecases/posts/getAllPost_usecase.dart';
 import 'package:popmeet/domain/usecases/posts/getPostsByUid_usecase.dart';
 import 'package:popmeet/domain/usecases/profile/createProfile_usecase.dart';
+import 'package:popmeet/domain/usecases/profile/updateAvatar_usecase.dart';
 import 'package:popmeet/domain/usecases/profile/updateBio_usecase.dart';
 import 'package:popmeet/domain/usecases/profile/updateDisplayName_usecase.dart';
 import 'package:popmeet/presentation/blocs/auth/auth_bloc.dart';
@@ -65,6 +66,8 @@ class MainApp extends StatelessWidget {
     final updatedisplaynameUsecase =
         UpdatedisplaynameUsecase(profileRespository);
     final updateBioUsecase = UpdatebioUsecase(profileRespository);
+    final updateAvatarUsecase =
+        UpdateAvatarUsecase(repository: profileRespository);
 
     // Post Bloc
     final postDatasource = PostDatasource();
@@ -81,8 +84,8 @@ class MainApp extends StatelessWidget {
               AuthBloc(signInUseCase, registerUseCase, signOutUsecase),
         ),
         BlocProvider(
-          create: (context) => ProfileBloc(
-              createprofileUsecase, updatedisplaynameUsecase, updateBioUsecase),
+          create: (context) => ProfileBloc(createprofileUsecase,
+              updatedisplaynameUsecase, updateBioUsecase, updateAvatarUsecase),
         ),
         BlocProvider(
             lazy: false,
