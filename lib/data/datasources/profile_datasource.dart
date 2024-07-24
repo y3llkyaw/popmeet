@@ -22,6 +22,7 @@ class ProfileDatasource {
       photoPath: photoUrl,
       bio: profileData.bio,
       gender: profileData.gender,
+      isOnline: true,
     );
 
     // Add a new user to the "profiles" collection
@@ -94,7 +95,6 @@ class ProfileDatasource {
   }
 
   static Stream<List<ProfileModel>?> getAllPeople() {
-    print("get all people");
     return FirebaseFirestore.instance
         .collection("profiles")
         .snapshots()
@@ -102,6 +102,15 @@ class ProfileDatasource {
       return snapshot.docs.map((snapshot) {
         return ProfileModel.fromMap(snapshot);
       }).toList();
+    });
+  }
+
+  static Future<void> isUserOnline(bool isOnline) async {
+    await FirebaseFirestore.instance
+        .collection('profiles')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .update({
+      'isOnline': isOnline,
     });
   }
 }

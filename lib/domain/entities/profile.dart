@@ -6,6 +6,7 @@ class Profile extends User {
   String photoPath;
   String? bio;
   Genders gender;
+  bool isOnline;
 
   Profile({
     required super.id,
@@ -14,5 +15,6 @@ class Profile extends User {
     required this.photoPath,
     required this.bio,
     required this.gender,
+    required this.isOnline,
   });
 }

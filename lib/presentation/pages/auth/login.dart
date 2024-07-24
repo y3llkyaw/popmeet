@@ -44,6 +44,7 @@ class _LoginPageState extends State<LoginPage> {
         }
       },
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 40),
           child: Column(

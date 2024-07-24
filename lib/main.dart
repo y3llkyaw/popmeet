@@ -31,7 +31,6 @@ import 'package:popmeet/presentation/pages/getting_start/getting_start.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: kIsWeb
         ? HydratedStorage.webStorageDirectory
@@ -41,11 +40,44 @@ void main() async {
     name: 'popmeet',
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   runApp(const MainApp());
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget with WidgetsBindingObserver {
   const MainApp({super.key});
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print(state);
+    if (state == AppLifecycleState.resumed) {
+      ProfileDatasource.isUserOnline(true);
+    } else if (state == AppLifecycleState.paused) {
+      ProfileDatasource.isUserOnline(false);
+    } else if (state == AppLifecycleState.detached) {
+      ProfileDatasource.isUserOnline(false);
+    } else if (state == AppLifecycleState.inactive) {
+      ProfileDatasource.isUserOnline(false);
+    }
+  }
+
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(widget);
+    ProfileDatasource.isUserOnline(true);
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(widget);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -58,15 +58,15 @@ class SettingPage extends StatelessWidget {
                 subtitle: BlocBuilder<ProfileBloc, ProfileState>(
                   bloc: profileBloc,
                   builder: (context, state) {
-                    if (state is ProfileLoaded) {
+                    if (state is ProfilesLoaded) {
                       return Text(
-                        state.profile.name.toString(),
+                        state.userProfile.name.toString(),
                         style: const TextStyle(fontSize: 15),
                       );
                     } else if (state is ProfileLoading) {
                       return const LinearProgressIndicator();
                     } else if (state is ProfileUpdateSuccess) {
-                      profileBloc.add(GetProfileEvent(uid: cuser!.uid));
+                      profileBloc.add(GetAllProfilesEvent(cuser!.uid));
                       return const Text('');
                     }
                     return const Text('');
@@ -108,9 +108,9 @@ class SettingPage extends StatelessWidget {
                 subtitle: BlocBuilder<ProfileBloc, ProfileState>(
                   bloc: profileBloc,
                   builder: (context, state) {
-                    if (state is ProfileLoaded) {
+                    if (state is ProfilesLoaded) {
                       return Text(
-                        state.profile.bio.toString(),
+                        state.userProfile.bio.toString(),
                         style: const TextStyle(fontSize: 15),
                       );
                     } else if (state is ProfileLoading) {

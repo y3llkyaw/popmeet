@@ -12,7 +12,7 @@ class PeoplePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final profileBloc = BlocProvider.of<ProfileBloc>(context);
     final people = ProfileDatasource.getAllPeople();
-    
+
     return Scaffold(
         body: RefreshIndicator(
       onRefresh: () async {
@@ -52,10 +52,12 @@ class PeoplePage extends StatelessWidget {
                         subtitle: Text(snapshot.data![index].bio ?? ''),
                         trailing: IconButton(
                           onPressed: () {},
-                          icon: const Icon(
+                          icon: Icon(
                             size: 30,
                             CupertinoIcons.chat_bubble_2_fill,
-                            color: Colors.green,
+                            color: snapshot.data![index].isOnline
+                                ? Colors.green
+                                : Colors.grey,
                           ),
                         )),
                   );

@@ -10,6 +10,7 @@ class ProfileModel extends Profile {
     required super.gender,
     required super.photoPath,
     required super.bio,
+    required super.isOnline,
   });
 
   factory ProfileModel.fromFirebaseDatabase(DocumentSnapshot doc) {
@@ -21,6 +22,7 @@ class ProfileModel extends Profile {
         gender: Genders.values
             .firstWhere((element) => element.toString() == data['gender']),
         photoPath: data['photoURL'],
+        isOnline: true,
         bio: data['bio']);
   }
 
@@ -33,6 +35,7 @@ class ProfileModel extends Profile {
       gender: Genders.values
           .firstWhere((element) => element.toString() == map['gender']),
       photoPath: map['photoURL'],
+      isOnline: map['isOnline'],
       bio: map['bio'],
     );
   }

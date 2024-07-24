@@ -57,18 +57,18 @@ class _SignUpPageState extends State<SignUpPage> {
         }
       },
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 40),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Center(
-                child: Text(
-                  'POP meet! ',
-                  style: TextStyle(fontSize: 20),
-                ),
-              ),
+              Center(
+                  child: SizedBox(
+                      height: 200,
+                      width: 200,
+                      child: Image.asset('assets/images/logo.png'))),
               const SizedBox(
                 height: 20,
               ),

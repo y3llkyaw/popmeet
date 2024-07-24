@@ -42,9 +42,24 @@ class PostComponent extends StatelessWidget {
                             SizedBox(
                               height: 30,
                               width: 30,
-                              child: CircleAvatar(
-                                backgroundImage: CachedNetworkImageProvider(
-                                    profile!.photoPath),
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Scaffold(
+                                                appBar: AppBar(
+                                                  title: Text(profile!.name),
+                                                ),
+                                                body: ProfilePage(
+                                                  profile: profile!,
+                                                ),
+                                              )));
+                                },
+                                child: CircleAvatar(
+                                  backgroundImage: CachedNetworkImageProvider(
+                                      profile!.photoPath),
+                                ),
                               ),
                             ),
                             const SizedBox(

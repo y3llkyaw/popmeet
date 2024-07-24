@@ -31,6 +31,9 @@ class ProfilePage extends StatelessWidget {
     } else {
       postBloc.add(GetPostsEvent(uid: profile.id));
     }
+    if (profileBloc.state is ProfileUpdateSuccess) {
+      profileBloc.add(GetAllProfilesEvent(profile.id));
+    }
 
     return Scaffold(
       body: Padding(
@@ -113,7 +116,7 @@ class ProfilePage extends StatelessWidget {
                                                     height: 20,
                                                   ),
                                                   const Text(
-                                                    "Your Profile Picture will be look like it ?",
+                                                    "Your Profile Picture will be look like it",
                                                     style: TextStyle(
                                                         fontSize: 18,
                                                         color: Colors.white),
@@ -154,6 +157,29 @@ class ProfilePage extends StatelessWidget {
                                         });
                                   }
                                 }
+                              },
+                              onLongPress: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return Center(
+                                        child: SizedBox(
+                                          height: 400,
+                                          width: 400,
+                                          child: CircleAvatar(
+                                            backgroundImage: NetworkImage(
+                                              profileBloc.state
+                                                      is ProfileSuccess
+                                                  ? (profileBloc.state
+                                                          as ProfilesLoaded)
+                                                      .userProfile
+                                                      .photoPath
+                                                  : profile.photoPath,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    });
                               },
                               child: Builder(builder: (context) {
                                 if (profile.id ==
@@ -214,7 +240,7 @@ class ProfilePage extends StatelessWidget {
                                             profile.name ?? '',
                                             style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 15),
+                                                fontSize: 18),
                                             maxLines: 3,
                                           ),
                                         ),

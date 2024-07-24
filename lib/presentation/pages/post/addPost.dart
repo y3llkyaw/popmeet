@@ -29,6 +29,7 @@ class _AddPostState extends State<AddPost> {
   Widget build(BuildContext context) {
     final postBloc = BlocProvider.of<PostBloc>(context);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('Add Post'),
       ),

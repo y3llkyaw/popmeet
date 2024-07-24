@@ -32,6 +32,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
           final newProfile = Profile(
+              isOnline: true,
               id: user.uid,
               email: user.email ?? '',
               name: event.name,
