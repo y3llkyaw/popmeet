@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:popmeet/core/constants/constants.dart';
 import 'package:popmeet/domain/entities/user.dart';
 
@@ -7,6 +8,7 @@ class Profile extends User {
   String? bio;
   Genders gender;
   bool isOnline;
+  Timestamp lastOnline;
 
   Profile({
     required super.id,
@@ -16,5 +18,6 @@ class Profile extends User {
     required this.bio,
     required this.gender,
     required this.isOnline,
+    required this.lastOnline,
   });
 }

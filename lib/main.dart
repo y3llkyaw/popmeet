@@ -69,7 +69,6 @@ class _MainAppState extends State<MainApp> {
   void initState() {
     WidgetsBinding.instance.addObserver(widget);
     ProfileDatasource.isUserOnline(true);
-
     super.initState();
   }
 
@@ -126,15 +125,18 @@ class _MainAppState extends State<MainApp> {
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          home: Builder(builder: (context) {
-            if (firebaseAuth.currentUser != null) {
-              if (firebaseAuth.currentUser?.displayName == null) {
-                return const GettingStartPage();
-              }
-              return const AppView();
-            }
-            return const LoginPage();
-          })),
+          home: StreamBuilder(
+              stream: firebaseAuth.authStateChanges(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  if (snapshot.data!.displayName == null) {
+                    return GettingStartPage();
+                  }
+                  return AppView();
+                } else {
+                  return LoginPage();
+                }
+              })),
     );
   }
 }

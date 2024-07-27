@@ -28,7 +28,6 @@ class SettingPage extends StatelessWidget {
                   var nameController = TextEditingController();
                   String? displayName =
                       FirebaseAuth.instance.currentUser?.displayName;
-
                   if (displayName != null) {
                     nameController.text = displayName;
                   }

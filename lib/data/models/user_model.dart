@@ -8,7 +8,6 @@ class UserModel extends User {
   });
 
   factory UserModel.fromFirebaseUser(firebase_auth.User user) {
-    
     return UserModel(
       id: user.uid,
       email: user.email ?? '',

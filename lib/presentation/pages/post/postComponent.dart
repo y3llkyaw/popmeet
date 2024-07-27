@@ -49,7 +49,8 @@ class PostComponent extends StatelessWidget {
                                       MaterialPageRoute(
                                           builder: (context) => Scaffold(
                                                 appBar: AppBar(
-                                                  title: Text(profile!.name),
+                                                  title: Text(
+                                                      "${profile!.name}'s Profile"),
                                                 ),
                                                 body: ProfilePage(
                                                   profile: profile!,
@@ -75,7 +76,8 @@ class PostComponent extends StatelessWidget {
                                         MaterialPageRoute(
                                             builder: (context) => Scaffold(
                                                   appBar: AppBar(
-                                                    title: Text(profile!.name),
+                                                    title: Text(
+                                                        "${profile!.name}'s Profile"),
                                                   ),
                                                   body: ProfilePage(
                                                     profile: profile!,

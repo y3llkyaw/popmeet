@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:popmeet/core/constants/constants.dart';
@@ -38,7 +39,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
               name: event.name,
               photoPath: event.photoURL,
               bio: event.bio,
-              gender: event.gender);
+              gender: event.gender,
+              lastOnline: Timestamp.now());
           _createprofileUsecase.call(newProfile);
         }
         emit(ProfileSuccess());

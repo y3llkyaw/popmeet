@@ -16,6 +16,7 @@ class ProfileDatasource {
       throw Exception('Failed to upload photo');
     }
     Profile profile = Profile(
+      lastOnline: Timestamp.now(),
       id: profileData.id,
       email: profileData.email,
       name: profileData.name,
@@ -28,6 +29,8 @@ class ProfileDatasource {
     // Add a new user to the "profiles" collection
     // Becarful Add [photoUrl] to [Profile] documents
     await profiles.doc(profile.id).set({
+      'isOnline': true,
+      'lastOnline': Timestamp.now(),
       'uid': profile.id,
       'displayName': profile.name,
       'email': profile.email,
@@ -97,6 +100,7 @@ class ProfileDatasource {
   static Stream<List<ProfileModel>?> getAllPeople() {
     return FirebaseFirestore.instance
         .collection("profiles")
+        .orderBy("lastOnline", descending: true)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((snapshot) {
@@ -106,11 +110,19 @@ class ProfileDatasource {
   }
 
   static Future<void> isUserOnline(bool isOnline) async {
-    await FirebaseFirestore.instance
-        .collection('profiles')
-        .doc(FirebaseAuth.instance.currentUser?.uid)
-        .update({
-      'isOnline': isOnline,
-    });
+    if (FirebaseAuth.instance.currentUser?.displayName != null) {
+      await FirebaseFirestore.instance
+          .collection('profiles')
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .update({
+        'isOnline': isOnline,
+      });
+      await FirebaseFirestore.instance
+          .collection('profiles')
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .update({
+        'lastOnline': Timestamp.now(),
+      });
+    }
   }
 }

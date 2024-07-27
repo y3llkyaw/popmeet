@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:image_picker/image_picker.dart';
 import 'package:popmeet/core/constants/constants.dart';
 import 'package:popmeet/presentation/components/form_container.dart';
@@ -31,6 +31,7 @@ class _GettingStartPageState extends State<GettingStartPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: const Text(
             'Let\'s set up your Profile',

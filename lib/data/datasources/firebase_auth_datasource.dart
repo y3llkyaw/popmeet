@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:popmeet/data/datasources/profile_datasource.dart';
 import '../models/user_model.dart';
 
 class FirebaseAuthDataSource {
@@ -31,6 +32,7 @@ class FirebaseAuthDataSource {
   }
 
   Future<void> signOut() async {
+    await ProfileDatasource.isUserOnline(false);
     await auth.signOut();
   }
 

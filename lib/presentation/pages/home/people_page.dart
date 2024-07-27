@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:popmeet/data/datasources/profile_datasource.dart';
 import 'package:popmeet/presentation/blocs/profile/profile_bloc.dart';
+import 'package:popmeet/presentation/pages/chat/chat_page.dart';
 import 'package:popmeet/presentation/pages/home/profile_page.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class PeoplePage extends StatelessWidget {
   const PeoplePage({super.key});
@@ -25,6 +27,10 @@ class PeoplePage extends StatelessWidget {
             return ListView.builder(
                 itemCount: snapshot.data?.length ?? 0,
                 itemBuilder: (context, index) {
+                  if (snapshot.data![index].id ==
+                      FirebaseAuth.instance.currentUser!.uid) {
+                    return Container();
+                  }
                   return InkWell(
                     onTap: () {
                       Navigator.push(
@@ -48,15 +54,42 @@ class PeoplePage extends StatelessWidget {
                                 NetworkImage(snapshot.data![index].photoPath),
                           ),
                         ),
-                        title: Text(snapshot.data![index].name),
+                        title: Row(
+                          children: [
+                            Text(snapshot.data![index].name),
+                            const Spacer(),
+                            (!snapshot.data![index].isOnline)
+                                ? Text(
+                                    timeago
+                                        .format(
+                                            snapshot.data![index].lastOnline
+                                                .toDate(),
+                                            allowFromNow: true)
+                                        .toString(),
+                                    style: const TextStyle(
+                                        fontSize: 10, color: Colors.pink),
+                                  )
+                                : const Text(
+                                    "online",
+                                    style: TextStyle(
+                                        fontSize: 12, color: Colors.pink),
+                                  )
+                          ],
+                        ),
                         subtitle: Text(snapshot.data![index].bio ?? ''),
                         trailing: IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ChatPage(
+                                        profile: snapshot.data![index])));
+                          },
                           icon: Icon(
                             size: 30,
                             CupertinoIcons.chat_bubble_2_fill,
                             color: snapshot.data![index].isOnline
-                                ? Colors.green
+                                ? Colors.pinkAccent
                                 : Colors.grey,
                           ),
                         )),

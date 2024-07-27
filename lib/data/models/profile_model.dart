@@ -4,6 +4,7 @@ import 'package:popmeet/domain/entities/profile.dart';
 
 class ProfileModel extends Profile {
   ProfileModel({
+    required super.lastOnline,
     required super.id,
     required super.email,
     required super.name,
@@ -16,6 +17,7 @@ class ProfileModel extends Profile {
   factory ProfileModel.fromFirebaseDatabase(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return ProfileModel(
+        lastOnline: Timestamp.now(),
         id: doc.id,
         email: data['email'],
         name: data['displayName'],
@@ -29,6 +31,7 @@ class ProfileModel extends Profile {
   factory ProfileModel.fromMap(DocumentSnapshot doc) {
     final map = doc.data() as Map<String, dynamic>;
     return ProfileModel(
+      lastOnline: map['lastOnline'],
       id: doc.id,
       email: map['email'],
       name: map['displayName'],
