@@ -50,21 +50,22 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       }
     });
 
-    // on<GetProfileEvent>((event, emit) async {
-    //   emit(ProfileLoading());
-    //   try {
-    //     final p = await ProfileDatasource.getProfileById(event.uid);
-    //     if (p != null) {
-    //       emit(ProfileLoaded(profile: p));
-    //     }
-    //   } catch (e) {
-    //     emit(ProfileError(message: e.toString()));
-    //   }
-    // });
+    on<GetProfileEvent>((event, emit) async {
+      emit(ProfileLoading());
+      try {
+        final p = await ProfileDatasource.getProfileById(event.uid);
+        if (p != null) {
+          emit(ProfileLoaded(profile: p));
+        }
+      } catch (e) {
+        emit(ProfileError(message: e.toString()));
+      }
+    });
 
     on<GetAllProfilesEvent>((event, emit) async {
       emit(ProfileLoading());
       try {
+        print("get");
         final userProfile = await ProfileDatasource.getProfileById(event.uid);
         final profiles = await ProfileDatasource.getAllProfiles();
         if (userProfile != null && profiles != null) {

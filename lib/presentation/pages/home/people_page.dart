@@ -49,9 +49,12 @@ class PeoplePage extends StatelessWidget {
                         leading: SizedBox(
                           width: 50,
                           height: 50,
-                          child: CircleAvatar(
-                            backgroundImage:
-                                NetworkImage(snapshot.data![index].photoPath),
+                          child: Hero(
+                            tag: snapshot.data![index],
+                            child: CircleAvatar(
+                              backgroundImage:
+                                  NetworkImage(snapshot.data![index].photoPath),
+                            ),
                           ),
                         ),
                         title: Row(

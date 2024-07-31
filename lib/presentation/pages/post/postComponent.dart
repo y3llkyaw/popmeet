@@ -57,9 +57,12 @@ class PostComponent extends StatelessWidget {
                                                 ),
                                               )));
                                 },
-                                child: CircleAvatar(
-                                  backgroundImage: CachedNetworkImageProvider(
-                                      profile!.photoPath),
+                                child: Hero(
+                                  tag: profile!,
+                                  child: CircleAvatar(
+                                    backgroundImage: CachedNetworkImageProvider(
+                                        profile!.photoPath),
+                                  ),
                                 ),
                               ),
                             ),
@@ -118,10 +121,22 @@ class PostComponent extends StatelessWidget {
                 InkWell(
                   onTap: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                PostDetail(post: post, profile: profile)));
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            PostDetail(
+                          post: post,
+                          profile: profile,
+                        ),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          return child;
+                        },
+                        transitionDuration: const Duration(
+                            milliseconds:
+                                500), // Set your desired duration here
+                      ),
+                    );
                   },
                   child: Hero(
                     tag: post,

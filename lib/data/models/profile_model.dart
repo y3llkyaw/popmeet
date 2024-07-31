@@ -42,4 +42,6 @@ class ProfileModel extends Profile {
       bio: map['bio'],
     );
   }
+
+  get photoURL => null;
 }

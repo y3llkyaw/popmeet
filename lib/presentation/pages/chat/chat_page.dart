@@ -1,11 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:popmeet/data/datasources/message_datasource.dart';
 import 'package:popmeet/data/models/message_model.dart';
 import 'package:popmeet/domain/entities/profile.dart';
-import 'package:popmeet/presentation/blocs/profile/profile_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ChatPage extends StatefulWidget {
@@ -35,6 +33,7 @@ class _ChatPageState extends State<ChatPage> {
     chatroom.sort();
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
           title: ListTile(
         contentPadding: const EdgeInsets.all(0),
@@ -166,6 +165,8 @@ class _ChatPageState extends State<ChatPage> {
               Expanded(
                 child: TextField(
                   controller: message,
+                  keyboardType: TextInputType.text,
+                  textInputAction: TextInputAction.send,
                   decoration: InputDecoration(
                     hintText: 'Type a message',
                     border: OutlineInputBorder(

@@ -28,7 +28,7 @@ final class ProfileUpdating extends ProfileState {}
 final class ProfileUpdateSuccess extends ProfileState {}
 
 final class ProfilesLoaded extends ProfileState {
-  ProfileModel userProfile;
-  List<Profile> profiles;
-  ProfilesLoaded({required this.profiles, required this.userProfile});
+  final ProfileModel userProfile;
+  final List<Profile> profiles;
+  const ProfilesLoaded({required this.profiles, required this.userProfile});
 }
