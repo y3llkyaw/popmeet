@@ -7,9 +7,9 @@ import 'package:popmeet/domain/entities/profile.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ChatPage extends StatefulWidget {
-  Profile profile;
+  final Profile profile;
 
-  ChatPage({super.key, required this.profile});
+  const ChatPage({super.key, required this.profile});
   @override
   State<ChatPage> createState() => _ChatPageState();
 }

@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -110,253 +109,238 @@ class ProfilePage extends StatelessWidget {
     }
 
     return Scaffold(
-      body: BlocListener<PostBloc, PostState>(
-        listener: (context, state) {
-          if (state is PostSuccess) {
-            profileBloc.add(GetAllProfilesEvent(profile.id));
-          }
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              Column(
-                children: [
-                  BlocListener<ProfileBloc, ProfileState>(
-                    listener: (context, state) {
-                      if (state is ProfileUpdateSuccess) {
-                        Navigator.pop(context);
-                        profileBloc.add(GetAllProfilesEvent(profile.id));
-                      }
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Builder(builder: (context) {
-                          return SizedBox(
-                              width: mediaQuery.width * 0.25,
-                              height: mediaQuery.width * 0.25,
-                              child: InkWell(
-                                onTap: () async {
-                                  if (profile.id ==
-                                      FirebaseAuth.instance.currentUser!.uid) {
-                                    var image = await ImagePicker()
-                                        .pickImage(source: ImageSource.gallery);
-                                    if (image != null) {
-                                      pickImage(image);
-                                    }
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Column(
+              children: [
+                BlocListener<ProfileBloc, ProfileState>(
+                  listener: (context, state) {
+                    if (state is ProfileUpdateSuccess) {
+                      Navigator.pop(context);
+                      profileBloc.add(GetAllProfilesEvent(profile.id));
+                    }
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Builder(builder: (context) {
+                        return SizedBox(
+                            width: mediaQuery.width * 0.25,
+                            height: mediaQuery.width * 0.25,
+                            child: InkWell(
+                              onTap: () async {
+                                if (profile.id ==
+                                    FirebaseAuth.instance.currentUser!.uid) {
+                                  var image = await ImagePicker()
+                                      .pickImage(source: ImageSource.gallery);
+                                  if (image != null) {
+                                    pickImage(image);
                                   }
-                                },
-                                onLongPress: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return Center(
-                                          child: SizedBox(
-                                            height: 400,
-                                            width: 400,
-                                            child: CircleAvatar(
-                                              backgroundImage: NetworkImage(
-                                                profileBloc.state
-                                                        is ProfileSuccess
-                                                    ? (profileBloc.state
-                                                            as ProfilesLoaded)
-                                                        .userProfile
-                                                        .photoPath
-                                                    : profile.photoPath,
-                                              ),
+                                }
+                              },
+                              onLongPress: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return Center(
+                                        child: SizedBox(
+                                          height: 400,
+                                          width: 400,
+                                          child: CircleAvatar(
+                                            backgroundImage: NetworkImage(
+                                              profileBloc.state
+                                                      is ProfileSuccess
+                                                  ? (profileBloc.state
+                                                          as ProfilesLoaded)
+                                                      .userProfile
+                                                      .photoPath
+                                                  : profile.photoPath,
                                             ),
                                           ),
-                                        );
-                                      });
-                                },
-                                child: Hero(
-                                  tag: profile,
-                                  child: CircleAvatar(
-                                    backgroundImage: CachedNetworkImageProvider(
-                                      profileBloc.state is ProfileSuccess
-                                          ? (profileBloc.state
-                                                  as ProfilesLoaded)
-                                              .userProfile
-                                              .photoPath
-                                          : profile.photoPath,
-                                    ),
+                                        ),
+                                      );
+                                    });
+                              },
+                              child: Hero(
+                                tag: profile,
+                                child: CircleAvatar(
+                                  backgroundImage: CachedNetworkImageProvider(
+                                    profileBloc.state is ProfileSuccess
+                                        ? (profileBloc.state as ProfilesLoaded)
+                                            .userProfile
+                                            .photoPath
+                                        : profile.photoPath,
                                   ),
                                 ),
-                              ));
-                        }),
-                        BlocBuilder<ProfileBloc, ProfileState>(
-                          bloc: profileBloc,
-                          builder: (context, state) {
-                            if (state is ProfileLoading) {
-                              return Row(
-                                children: [
-                                  Column(
-                                    children: [
-                                      const Text('Profile is Loading'),
-                                      SizedBox(
-                                          width: mediaQuery.width * 0.5,
-                                          child:
-                                              const LinearProgressIndicator())
-                                    ],
-                                  ),
-                                ],
-                              );
-                            } else if (state is ProfilesLoaded) {
-                              return Row(
-                                children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          SizedBox(
-                                            width: 180,
-                                            child: Text(
-                                              profile.name ?? '',
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 18),
-                                              maxLines: 3,
-                                            ),
-                                          ),
-                                          Icon(
-                                            profile.gender == Genders.male
-                                                ? Icons.male
-                                                : profile.gender ==
-                                                        Genders.female
-                                                    ? Icons.female
-                                                    : Icons.transgender,
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          SizedBox(
-                                            width: 165,
-                                            child: Text(
-                                              profile.bio ?? '',
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.w400),
-                                              maxLines: 3,
-                                            ),
-                                          ),
-                                          Row(
-                                            children: [
-                                              const Text(
-                                                '',
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.w300,
-                                                    fontSize: 12),
-                                              ),
-                                              profile.id ==
-                                                      FirebaseAuth.instance
-                                                          .currentUser?.uid
-                                                  ? IconButton(
-                                                      onPressed: () {
-                                                        Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        const SettingPage()));
-                                                      },
-                                                      icon: const Icon(
-                                                          CupertinoIcons
-                                                              .settings))
-                                                  : IconButton(
-                                                      onPressed: () {},
-                                                      icon: const Icon(
-                                                          CupertinoIcons
-                                                              .person_badge_plus))
-                                            ],
-                                          )
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              );
-                            } else if (state is ProfileError) {
-                              return Text(state.message);
-                            }
-                            return const Text('');
-                          },
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Column(
-                children: [
-                  Container(
-                    width: mediaQuery.width * 0.9,
-                    padding:
-                        const EdgeInsets.only(left: 10, right: 10, top: 20),
-                    height: mediaQuery.height * 0.65,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.black12,
-                    ),
-                    child: BlocBuilder<PostBloc, PostState>(
-                      bloc: postBloc,
-                      builder: (context, state) {
-                        if (state is PostLoading) {
-                          return const Center(
-                            child: Text("Loading..."),
-                          );
-                        } else if (state is PostSuccess) {
-                          return GridView.builder(
-                              itemCount: state.profilePost?.length ?? 0,
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount:
-                                    3, // number of items in each row
-                                mainAxisSpacing: 7.0, // spacing between rows
-                                crossAxisSpacing:
-                                    7.0, // spacing between columns
                               ),
-                              itemBuilder: (context, index) {
-                                final post = state.profilePost![index];
-                                return InkWell(
-                                  onTap: () => {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => PostDetail(
-                                                  post: post,
-                                                  profile: profile,
-                                                )))
-                                  },
-                                  child: Hero(
-                                    tag: post,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                              fit: BoxFit.cover,
-                                              image: NetworkImage(state
-                                                      .profilePost?[index]
-                                                      .photoURL ??
-                                                  ''))), // color of grid items
+                            ));
+                      }),
+                      BlocBuilder<ProfileBloc, ProfileState>(
+                        bloc: profileBloc,
+                        builder: (context, state) {
+                          if (state is ProfileLoading) {
+                            return Row(
+                              children: [
+                                Column(
+                                  children: [
+                                    const Text('Profile is Loading'),
+                                    SizedBox(
+                                        width: mediaQuery.width * 0.5,
+                                        child: const LinearProgressIndicator())
+                                  ],
+                                ),
+                              ],
+                            );
+                          } else if (state is ProfilesLoaded) {
+                            return Row(
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        SizedBox(
+                                          width: 180,
+                                          child: Text(
+                                            profile.name,
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18),
+                                            maxLines: 3,
+                                          ),
+                                        ),
+                                        Icon(
+                                          profile.gender == Genders.male
+                                              ? Icons.male
+                                              : profile.gender == Genders.female
+                                                  ? Icons.female
+                                                  : Icons.transgender,
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                );
-                              });
-                        } else {
-                          return const Text('No Posts');
-                        }
-                      },
-                    ),
+                                    Row(
+                                      children: [
+                                        SizedBox(
+                                          width: 165,
+                                          child: Text(
+                                            profile.bio ?? '',
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.w400),
+                                            maxLines: 3,
+                                          ),
+                                        ),
+                                        Row(
+                                          children: [
+                                            const Text(
+                                              '',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w300,
+                                                  fontSize: 12),
+                                            ),
+                                            profile.id ==
+                                                    FirebaseAuth.instance
+                                                        .currentUser?.uid
+                                                ? IconButton(
+                                                    onPressed: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  const SettingPage()));
+                                                    },
+                                                    icon: const Icon(
+                                                        CupertinoIcons
+                                                            .settings))
+                                                : IconButton(
+                                                    onPressed: () {},
+                                                    icon: const Icon(
+                                                        CupertinoIcons
+                                                            .person_badge_plus))
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            );
+                          } else if (state is ProfileError) {
+                            return Text(state.message);
+                          }
+                          return const Text('');
+                        },
+                      )
+                    ],
                   ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Column(
+              children: [
+                Container(
+                  width: mediaQuery.width * 0.9,
+                  padding: const EdgeInsets.only(left: 10, right: 10, top: 20),
+                  height: mediaQuery.height * 0.65,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.black12,
+                  ),
+                  child: BlocBuilder<PostBloc, PostState>(
+                    bloc: postBloc,
+                    builder: (context, state) {
+                      if (state is PostLoading) {
+                        return const Center(
+                          child: Text("Loading..."),
+                        );
+                      } else if (state is PostSuccess) {
+                        return GridView.builder(
+                            itemCount: state.profilePost?.length ?? 0,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3, // number of items in each row
+                              mainAxisSpacing: 7.0, // spacing between rows
+                              crossAxisSpacing: 7.0, // spacing between columns
+                            ),
+                            itemBuilder: (context, index) {
+                              final post = state.profilePost![index];
+                              return InkWell(
+                                onTap: () => {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => PostDetail(
+                                                post: post,
+                                                profile: profile,
+                                              )))
+                                },
+                                child: Hero(
+                                  tag: post,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            fit: BoxFit.cover,
+                                            image: NetworkImage(state
+                                                    .profilePost?[index]
+                                                    .photoURL ??
+                                                ''))), // color of grid items
+                                  ),
+                                ),
+                              );
+                            });
+                      } else {
+                        return const Text('No Posts');
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

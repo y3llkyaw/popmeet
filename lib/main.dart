@@ -130,11 +130,11 @@ class _MainAppState extends State<MainApp> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   if (snapshot.data!.displayName == null) {
-                    return GettingStartPage();
+                    return const GettingStartPage();
                   }
-                  return AppView();
+                  return const AppView();
                 } else {
-                  return LoginPage();
+                  return const LoginPage();
                 }
               })),
     );
