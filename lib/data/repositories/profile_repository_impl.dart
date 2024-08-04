@@ -25,6 +25,6 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
   @override
   Future<String?> updateAvatar(String imagePath) {
-    return _profileDataSource.uploadAvatar(imagePath);
+    return _profileDataSource.updateAvatar(imagePath);
   }
 }

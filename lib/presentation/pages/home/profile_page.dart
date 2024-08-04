@@ -11,6 +11,7 @@ import 'package:popmeet/presentation/blocs/post/post_bloc.dart';
 import 'package:popmeet/presentation/blocs/profile/profile_bloc.dart';
 import 'package:popmeet/presentation/pages/home/setting_page.dart';
 import 'package:popmeet/presentation/pages/post/postDetail.dart';
+import 'package:shimmer_effect/shimmer_effect.dart';
 
 class ProfilePage extends StatelessWidget {
   final Profile profile;
@@ -23,15 +24,18 @@ class ProfilePage extends StatelessWidget {
     final profileBloc = BlocProvider.of<ProfileBloc>(context);
     final postBloc = BlocProvider.of<PostBloc>(context);
 
-    print(profileBloc.state);
-
-    if (postBloc.state is PostSuccess) {
-      if ((postBloc.state as PostSuccess).profilePost?.first.userId !=
+    if (postBloc.state is PostLoadedSuccess) {
+      if ((postBloc.state as PostLoadedSuccess).profilePost?.first.userId !=
           profile.id) {
         postBloc.add(GetPostsEvent(uid: profile.id));
-      } else if ((postBloc.state as PostSuccess).profilePost == null) {}
+      } else if ((postBloc.state as PostLoadedSuccess).profilePost == null) {}
     } else {
       postBloc.add(GetPostsEvent(uid: profile.id));
+    }
+
+    if (profileBloc.state is ProfilesLoaded) {
+    } else {
+      profileBloc.add(GetAllProfilesEvent(profile.id));
     }
 
     pickImage(XFile image) {
@@ -46,8 +50,8 @@ class ProfilePage extends StatelessWidget {
                       context: context,
                       builder: (context) {
                         return const Center(
-                          child: CircularProgressIndicator(),
-                        );
+                            // child: CircularProgressIndicator(),
+                            );
                       });
                 } else if (state is ProfileUpdateSuccess) {
                   Navigator.pop(context);
@@ -109,20 +113,20 @@ class ProfilePage extends StatelessWidget {
     }
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Column(
-              children: [
-                BlocListener<ProfileBloc, ProfileState>(
-                  listener: (context, state) {
-                    if (state is ProfileUpdateSuccess) {
-                      Navigator.pop(context);
-                      profileBloc.add(GetAllProfilesEvent(profile.id));
-                    }
-                  },
-                  child: Row(
+      body: BlocListener<PostBloc, PostState>(
+        bloc: postBloc,
+        listener: (context, state) {
+          if (state is PostSuccess) {
+            postBloc.add(GetPostsEvent(uid: profile.id));
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              Column(
+                children: [
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Builder(builder: (context) {
@@ -274,73 +278,90 @@ class ProfilePage extends StatelessWidget {
                       )
                     ],
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Column(
-              children: [
-                Container(
-                  width: mediaQuery.width * 0.9,
-                  padding: const EdgeInsets.only(left: 10, right: 10, top: 20),
-                  height: mediaQuery.height * 0.65,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.black12,
-                  ),
-                  child: BlocBuilder<PostBloc, PostState>(
-                    bloc: postBloc,
-                    builder: (context, state) {
-                      if (state is PostLoading) {
-                        return const Center(
-                          child: Text("Loading..."),
-                        );
-                      } else if (state is PostSuccess) {
-                        return GridView.builder(
-                            itemCount: state.profilePost?.length ?? 0,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3, // number of items in each row
-                              mainAxisSpacing: 7.0, // spacing between rows
-                              crossAxisSpacing: 7.0, // spacing between columns
-                            ),
-                            itemBuilder: (context, index) {
-                              final post = state.profilePost![index];
-                              return InkWell(
-                                onTap: () => {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => PostDetail(
-                                                post: post,
-                                                profile: profile,
-                                              )))
-                                },
-                                child: Hero(
-                                  tag: post,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            fit: BoxFit.cover,
-                                            image: NetworkImage(state
-                                                    .profilePost?[index]
-                                                    .photoURL ??
-                                                ''))), // color of grid items
+                ],
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Column(
+                children: [
+                  Container(
+                    width: mediaQuery.width * 0.9,
+                    padding:
+                        const EdgeInsets.only(left: 10, right: 10, top: 20),
+                    height: mediaQuery.height * 0.65,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.black12,
+                    ),
+                    child: BlocBuilder<PostBloc, PostState>(
+                      bloc: postBloc,
+                      builder: (context, state) {
+                        if (state is PostLoading) {
+                          return ShimmerEffect(
+                              baseColor: Colors.grey,
+                              highlightColor: Colors.white24,
+                              child: GridView.builder(
+                                  itemCount: 30,
+                                  gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount:
+                                        3, // number of items in each row
+                                    mainAxisSpacing:
+                                        7.0, // spacing between rows
+                                    crossAxisSpacing:
+                                        7.0, // spacing between columns
                                   ),
-                                ),
-                              );
-                            });
-                      } else {
-                        return const Text('No Posts');
-                      }
-                    },
+                                  itemBuilder: (context, index) {
+                                    return Container();
+                                  }));
+                        } else if (state is PostLoadedSuccess) {
+                          return GridView.builder(
+                              itemCount: state.profilePost?.length ?? 0,
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount:
+                                    3, // number of items in each row
+                                mainAxisSpacing: 7.0, // spacing between rows
+                                crossAxisSpacing:
+                                    7.0, // spacing between columns
+                              ),
+                              itemBuilder: (context, index) {
+                                final post = state.profilePost![index];
+                                return InkWell(
+                                  onTap: () => {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => PostDetail(
+                                                  post: post,
+                                                  profile: profile,
+                                                )))
+                                  },
+                                  child: Hero(
+                                    tag: post,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              fit: BoxFit.cover,
+                                              image: NetworkImage(state
+                                                      .profilePost?[index]
+                                                      .photoURL ??
+                                                  ''))), // color of grid items
+                                    ),
+                                  ),
+                                );
+                              });
+                        } else {
+                          return const Text('No Posts');
+                        }
+                      },
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

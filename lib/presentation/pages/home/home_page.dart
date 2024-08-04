@@ -16,8 +16,8 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final postBloc = BlocProvider.of<PostBloc>(context);
-    if (postBloc.state is PostSuccess) {
-      if ((postBloc.state as PostSuccess).posts == null) {
+    if (postBloc.state is PostLoadedSuccess) {
+      if ((postBloc.state as PostLoadedSuccess).posts == null) {
         postBloc
             .add(GetPostsEvent(uid: FirebaseAuth.instance.currentUser!.uid));
       }
@@ -34,7 +34,7 @@ class _HomeState extends State<Home> {
         child: BlocBuilder<PostBloc, PostState>(
           bloc: postBloc,
           builder: (context, state) {
-            if (state is PostSuccess) {
+            if (state is PostLoadedSuccess) {
               List<Post>? posts = state.posts;
 
               if (posts == null) {

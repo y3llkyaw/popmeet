@@ -125,7 +125,7 @@ class SettingPage extends StatelessWidget {
                     cuser!.emailVerified
                         ? CupertinoIcons.check_mark
                         : CupertinoIcons.exclamationmark,
-                    color: cuser!.emailVerified ? Colors.green : Colors.red),
+                    color: cuser.emailVerified ? Colors.green : Colors.red),
               ),
             ),
             ListTile(
@@ -135,14 +135,14 @@ class SettingPage extends StatelessWidget {
                 style: TextStyle(fontSize: 20),
               ),
               subtitle: Text(
-                cuser!.email.toString(),
+                cuser.email.toString(),
                 style: const TextStyle(fontSize: 15),
               ),
               trailing: Icon(
-                  cuser!.emailVerified
+                  cuser.emailVerified
                       ? CupertinoIcons.check_mark
                       : CupertinoIcons.exclamationmark,
-                  color: cuser!.emailVerified ? Colors.green : Colors.red),
+                  color: cuser.emailVerified ? Colors.green : Colors.red),
             ),
             const ListTile(
               leading: Icon(CupertinoIcons.lock),

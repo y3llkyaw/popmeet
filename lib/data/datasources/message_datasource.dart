@@ -31,6 +31,31 @@ class MessageDatasource {
     }
   }
 
+  static Stream<List<MessageModel>?>? getUserMessage(String chatRoomId) {
+    try {
+      print(chatRoomId);
+      final messages = FirebaseFirestore.instance
+          .collection("messages")
+          .orderBy("createdAt", descending: true)
+          .where("chatRoomId", isEqualTo: chatRoomId)
+          .snapshots()
+          .map((snapshot) {
+        final messagesModels = snapshot.docs.map((snapshot) {
+          final messages = MessageModel.fromMap(snapshot);
+          print(messages);
+          return messages;
+        }).toList();
+        print(messagesModels);
+        return messagesModels;
+      });
+      print(messages);
+      return messages;
+    } on FirebaseException catch (e) {
+      print(e.message);
+      return null;
+    }
+  }
+
   static Future<void> addMessage(
       List<String> chatRoomId, String message) async {
     if (!message.isEmpty) {

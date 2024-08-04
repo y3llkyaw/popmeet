@@ -15,10 +15,10 @@ final class PostInitial extends PostState {
 
 final class PostLoading extends PostState {}
 
-final class PostSuccess extends PostState {
+final class PostLoadedSuccess extends PostState {
   List<Post>? posts;
   List<Post>? profilePost;
-  PostSuccess({this.posts, this.profilePost});
+  PostLoadedSuccess({this.posts, this.profilePost});
 
   @override
   List<Object?> get props => [posts, profilePost];
@@ -30,3 +30,5 @@ final class PostFailure extends PostState {
 }
 
 final class PostDeleted extends PostState {}
+
+final class PostSuccess extends PostState {}

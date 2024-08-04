@@ -2,14 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:popmeet/presentation/blocs/post/post_bloc.dart';
 import 'package:popmeet/presentation/blocs/profile/profile_bloc.dart';
-import 'package:popmeet/presentation/pages/home/home_page.dart';
+import 'package:popmeet/presentation/pages/chat/message_page.dart';
+import 'package:popmeet/presentation/pages/home/home_page2.dart';
 import 'package:popmeet/presentation/pages/home/profile_page.dart';
 import 'package:popmeet/presentation/pages/home/people_page.dart';
-import 'package:popmeet/presentation/pages/post/addPost.dart';
 
 class AppView extends StatefulWidget {
   const AppView({super.key});
@@ -77,10 +75,12 @@ class _AppViewState extends State<AppView> {
             ]),
       ),
       body: [
-        const SafeArea(child: Home()),
+        const SafeArea(child: HomePage2()),
         const SafeArea(child: PeoplePage()),
         BlocBuilder<ProfileBloc, ProfileState>(
+          bloc: profileBloc,
           builder: (context, state) {
+            print(state);
             if (state is ProfilesLoaded) {
               return SafeArea(
                   child: ProfilePage(
@@ -97,28 +97,33 @@ class _AppViewState extends State<AppView> {
         backgroundColor: Colors.grey.shade200,
         shape: const CircleBorder(),
         onPressed: () async {
-          var image =
-              await ImagePicker().pickImage(source: ImageSource.gallery);
-
-          if (image != null) {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => BlocProvider.value(
-                        value: postBloc,
-                        child: AddPost(imagePath: image.path))));
-          } else {
-            Fluttertoast.showToast(
-              msg: "No Image Selected",
-              toastLength: Toast.LENGTH_LONG,
-              gravity: ToastGravity.SNACKBAR,
-              backgroundColor: Colors.grey,
-              textColor: Colors.black,
-              fontSize: 16.0,
-            );
-          }
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return MessagePage();
+          }));
         },
-        child: const Icon(CupertinoIcons.camera_circle),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            const Icon(
+              CupertinoIcons.chat_bubble_2_fill,
+            ),
+            Transform(
+              transform: Matrix4.translationValues(20, -15, 0),
+              child: const SizedBox(
+                height: 40,
+                width: 20,
+                child: CircleAvatar(
+                  backgroundColor: Colors.redAccent,
+                  child: Text(
+                    '1',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

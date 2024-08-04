@@ -42,7 +42,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         final profilePosts = await _getpostsbyuidUsecase.call(event.uid);
         final allPosts = await _getallpostUsecase.call();
         print(profilePosts);
-        emit(PostSuccess(profilePost: profilePosts, posts: allPosts));
+        emit(PostLoadedSuccess(profilePost: profilePosts, posts: allPosts));
       } catch (e) {
         print(e.toString());
         emit(PostFailure(message: e.toString()));

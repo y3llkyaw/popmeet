@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:popmeet/presentation/blocs/auth/auth_bloc.dart';
 import 'package:popmeet/presentation/components/form_container.dart';
-import 'package:popmeet/presentation/pages/app_view.dart';
 import 'package:popmeet/presentation/pages/auth/login.dart';
 import 'package:popmeet/presentation/pages/getting_start/getting_start.dart';
 

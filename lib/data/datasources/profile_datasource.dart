@@ -11,7 +11,10 @@ class ProfileDatasource {
   CollectionReference profiles =
       FirebaseFirestore.instance.collection('profiles');
   Future<Profile> createProfile(Profile profileData) async {
+    print(profileData);
+    print(profileData.photoPath);
     final String? photoUrl = await uploadAvatar(profileData.photoPath);
+
     if (photoUrl == null) {
       throw Exception('Failed to upload photo');
     }
@@ -55,7 +58,7 @@ class ProfileDatasource {
     });
   }
 
-  Future<String?> uploadAvatar(String imagePath) async {
+  Future<String?> updateAvatar(String imagePath) async {
     try {
       final profile =
           await getProfileById(FirebaseAuth.instance.currentUser!.uid);
@@ -87,7 +90,25 @@ class ProfileDatasource {
       });
       return url;
     } on FirebaseException catch (e) {
-      print('Upload failed: $e');
+      print(e.message);
+      return null;
+    }
+  }
+
+  Future<String?> uploadAvatar(String imagePath) async {
+    try {
+      final compressed = await Functions.compressImage(File(imagePath));
+      final bytes = await File(compressed!.path).readAsBytes();
+
+      final imgRef = FirebaseStorage.instance.ref().child(
+          'avatars/${FirebaseAuth.instance.currentUser?.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg');
+      await imgRef.putData(bytes);
+
+      final url = await imgRef.getDownloadURL();
+
+      return url;
+    } on FirebaseException catch (e) {
+      print(e.message);
       return null;
     }
   }

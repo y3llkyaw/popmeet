@@ -41,6 +41,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
               bio: event.bio,
               gender: event.gender,
               lastOnline: Timestamp.now());
+          print(newProfile);
           _createprofileUsecase.call(newProfile);
         }
         emit(ProfileSuccess());
@@ -65,7 +66,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<GetAllProfilesEvent>((event, emit) async {
       emit(ProfileLoading());
       try {
-        print("get");
+        print("get ${DateTime.now().microsecondsSinceEpoch}");
         final userProfile = await ProfileDatasource.getProfileById(event.uid);
         final profiles = await ProfileDatasource.getAllProfiles();
         if (userProfile != null && profiles != null) {

@@ -49,6 +49,7 @@ dependencies:
   intl: ^0.19.0
   timeago: ^3.7.0
   flutter_image_compress: ^2.3.0
+  shimmer_effect: ^1.0.4
 
 dev_dependencies:
   flutter_test:

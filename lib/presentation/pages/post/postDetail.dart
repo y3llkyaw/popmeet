@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:popmeet/data/datasources/profile_datasource.dart';
 import 'package:popmeet/presentation/blocs/post/post_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter/material.dart';
@@ -17,9 +16,6 @@ class PostDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final postBloc = BlocProvider.of<PostBloc>(context);
-    if (profile == null) {
-      final profile = ProfileDatasource.getProfileById(post.userId);
-    }
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -103,7 +99,9 @@ class PostDetail extends StatelessWidget {
                                                   },
                                                   child: const Text("Yes")),
                                               ElevatedButton(
-                                                  onPressed: () {},
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
                                                   child: const Text("No")),
                                             ],
                                           )
@@ -113,7 +111,10 @@ class PostDetail extends StatelessWidget {
                                   );
                                 });
                           },
-                          icon: const Icon(Icons.delete));
+                          icon: const Icon(
+                            Icons.delete,
+                            size: 20,
+                          ));
                     }
                     return Container();
                   })
