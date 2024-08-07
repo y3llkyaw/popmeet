@@ -93,12 +93,12 @@ class _AppViewState extends State<AppView> {
         ),
       ][selectedIndex],
       floatingActionButton: FloatingActionButton.small(
-        tooltip: 'Add Post',
+        tooltip: 'Messages',
         backgroundColor: Colors.grey.shade200,
         shape: const CircleBorder(),
-        onPressed: () async {
+        onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return MessagePage();
+            return const MessagePage();
           }));
         },
         child: Stack(

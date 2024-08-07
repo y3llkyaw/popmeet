@@ -1,6 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:popmeet/data/datasources/profile_datasource.dart';
+import 'package:popmeet/data/datasources/message_datasource.dart';
+import 'package:popmeet/domain/entities/profile.dart';
 import 'package:popmeet/presentation/pages/chat/chat_page.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -15,107 +18,125 @@ class _MessagePageState extends State<MessagePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Message"),
-        ),
-        body: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              automaticallyImplyLeading: false,
-              stretch: true,
-              floating: true,
-              snap: true,
-              title: Row(
-                children: [
-                  SizedBox(
-                      height: 50,
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      child: const TextField(
-                          decoration: InputDecoration(
-                        hintText: "Search Person",
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
-                          borderSide: BorderSide(
-                            color: Colors.grey,
-                            width: 1.0,
-                          ),
+      appBar: AppBar(
+        title: const Text("Message"),
+      ),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            automaticallyImplyLeading: false,
+            stretch: false,
+            pinned: false,
+            title: Row(
+              children: [
+                SizedBox(
+                    height: 50,
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: const TextField(
+                        decoration: InputDecoration(
+                      hintText: "Search Person",
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        borderSide: BorderSide(
+                          color: Colors.grey,
+                          width: 1.0,
                         ),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            borderSide:
-                                BorderSide(color: Colors.red, width: 1.0)),
-                      ))),
-                  IconButton(onPressed: () {}, icon: const Icon(Icons.search))
-                ],
-              ),
+                      ),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderSide:
+                              BorderSide(color: Colors.red, width: 1.0)),
+                    ))),
+                IconButton(onPressed: () {}, icon: const Icon(Icons.search))
+              ],
             ),
-            StreamBuilder(
-                stream: ProfileDatasource.getAllPeople(),
-                builder: (context, snapshot) {
+          ),
+          StreamBuilder<List<Profile>>(
+              stream: MessageDatasource.getInteractedProfiles(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
                   return SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
-                        return InkWell(
-                          onTap: () {},
-                          child: ListTile(
-                              leading: SizedBox(
-                                width: 50,
-                                height: 50,
-                                child: Hero(
-                                  tag: snapshot.data![index],
-                                  child: CircleAvatar(
-                                    backgroundImage: NetworkImage(
+                        List<String> uids = [
+                          snapshot.data![index].id,
+                          FirebaseAuth.instance.currentUser!.uid
+                        ];
+                        uids.sort();
+                        String chatRoomId = uids.join("_");
+                        return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ChatPage(
+                                            profile: snapshot.data![index])));
+                              },
+                              child: ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundImage: CachedNetworkImageProvider(
                                         snapshot.data![index].photoPath),
                                   ),
-                                ),
-                              ),
-                              title: Row(
-                                children: [
-                                  Text(snapshot.data![index].name),
-                                  const Spacer(),
-                                  (!snapshot.data![index].isOnline)
-                                      ? Text(
-                                          timeago
-                                              .format(
-                                                  snapshot
-                                                      .data![index].lastOnline
-                                                      .toDate(),
-                                                  allowFromNow: true)
-                                              .toString(),
-                                          style: const TextStyle(
-                                              fontSize: 10, color: Colors.pink),
-                                        )
-                                      : const Text(
-                                          "online",
-                                          style: TextStyle(
-                                              fontSize: 12, color: Colors.pink),
-                                        )
-                                ],
-                              ),
-                              subtitle: Text(snapshot.data![index].bio ?? ''),
-                              trailing: IconButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => ChatPage(
-                                              profile: snapshot.data![index])));
-                                },
-                                icon: Icon(
-                                  size: 30,
-                                  CupertinoIcons.chat_bubble_2_fill,
-                                  color: snapshot.data![index].isOnline
-                                      ? Colors.pinkAccent
-                                      : Colors.grey,
-                                ),
-                              )),
-                        );
+                                  title: Row(
+                                    children: [
+                                      Text(snapshot.data![index].name),
+                                      const Spacer(),
+                                      (!snapshot.data![index].isOnline)
+                                          ? Text(
+                                              timeago
+                                                  .format(
+                                                      snapshot.data![index]
+                                                          .lastOnline
+                                                          .toDate(),
+                                                      allowFromNow: true)
+                                                  .toString(),
+                                              style: const TextStyle(
+                                                  fontSize: 10,
+                                                  color: Colors.pink),
+                                            )
+                                          : const Text(
+                                              "online",
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.pink),
+                                            )
+                                    ],
+                                  ),
+                                  subtitle: StreamBuilder(
+                                      stream: MessageDatasource.getMessage(
+                                          chatRoomId),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasData) {
+                                          return Text(snapshot
+                                                      .data!.first.senderId ==
+                                                  FirebaseAuth
+                                                      .instance.currentUser!.uid
+                                              ? "you: ${snapshot.data!.first.text}"
+                                              : snapshot.data!.first.text);
+                                        } else {
+                                          return const Text("No Message");
+                                        }
+                                      })),
+                            ));
                       },
                       childCount: snapshot.data?.length ?? 0,
                     ),
                   );
-                }),
-          ],
-        ));
+                } else {
+                  return const SliverFillRemaining(
+                      child: Center(child: CircularProgressIndicator()));
+                }
+              }),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton.small(
+        backgroundColor: Colors.white,
+        shape: const CircleBorder(),
+        onPressed: () {},
+        child: const Icon(CupertinoIcons.person_3_fill),
+      ),
+    );
   }
 }

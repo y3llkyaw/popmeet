@@ -22,7 +22,6 @@ class HomePage2 extends StatelessWidget {
     } else {
       postBloc.add(GetPostsEvent(uid: FirebaseAuth.instance.currentUser!.uid));
     }
-
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () {
@@ -37,63 +36,51 @@ class HomePage2 extends StatelessWidget {
               shadowColor: Colors.white,
               surfaceTintColor: Colors.white,
               floating: true,
-              flexibleSpace: FlexibleSpaceBar(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(left: 30),
-                      child: Text(
-                        "POP Meet",
-                        style: TextStyle(
-                          fontSize: 22,
-                        ),
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        IconButton(
-                          tooltip: "Search",
-                          onPressed: () {},
-                          icon: const Icon(Icons.search),
-                        ),
-                        IconButton(
-                          onPressed: () async {
-                            var image = await ImagePicker()
-                                .pickImage(source: ImageSource.gallery);
-
-                            if (image != null) {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => BlocProvider.value(
-                                          value: postBloc,
-                                          child:
-                                              AddPost(imagePath: image.path))));
-                            } else {
-                              Fluttertoast.showToast(
-                                msg: "No Image Selected",
-                                toastLength: Toast.LENGTH_LONG,
-                                gravity: ToastGravity.SNACKBAR,
-                                backgroundColor: Colors.grey,
-                                textColor: Colors.black,
-                                fontSize: 16.0,
-                              );
-                            }
-                          },
-                          icon: const Icon(Icons.camera),
-                          tooltip: "Create Post",
-                        ),
-                        IconButton(
-                            tooltip: "Notifications",
-                            onPressed: () {},
-                            icon: const Icon(Icons.notifications))
-                      ],
-                    )
-                  ],
+              centerTitle: false,
+              title: const Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Text(
+                  "POP MEET",
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                 ),
               ),
+              actions: [
+                IconButton(
+                  tooltip: "Search",
+                  onPressed: () {},
+                  icon: const Icon(Icons.search),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.camera),
+                  tooltip: "Create Post",
+                  onPressed: () async {
+                    var image = await ImagePicker()
+                        .pickImage(source: ImageSource.gallery);
+
+                    if (image != null) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => BlocProvider.value(
+                                  value: postBloc,
+                                  child: AddPost(imagePath: image.path))));
+                    } else {
+                      Fluttertoast.showToast(
+                        msg: "No Image Selected",
+                        toastLength: Toast.LENGTH_LONG,
+                        gravity: ToastGravity.SNACKBAR,
+                        backgroundColor: Colors.grey,
+                        textColor: Colors.black,
+                        fontSize: 16.0,
+                      );
+                    }
+                  },
+                ),
+                IconButton(
+                    tooltip: "Notifications",
+                    onPressed: () {},
+                    icon: const Icon(Icons.notifications)),
+              ],
             ),
             BlocBuilder<PostBloc, PostState>(
               bloc: postBloc,
@@ -104,9 +91,8 @@ class HomePage2 extends StatelessWidget {
                       itemCount: state.posts?.length ?? 0,
                       itemBuilder: (context, index) {
                         if (posts == null) {
-                          return Container(
-                            child: const Text('No post have to show here'),
-                          );
+                          return const Center(
+                              child: Text('No post have to show here'));
                         } else {
                           return Padding(
                             padding: const EdgeInsets.all(8.0),

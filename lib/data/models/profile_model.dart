@@ -17,14 +17,14 @@ class ProfileModel extends Profile {
   factory ProfileModel.fromFirebaseDatabase(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return ProfileModel(
-        lastOnline: Timestamp.now(),
+        lastOnline: data['lastOnline'],
         id: doc.id,
         email: data['email'],
         name: data['displayName'],
         gender: Genders.values
             .firstWhere((element) => element.toString() == data['gender']),
         photoPath: data['photoURL'],
-        isOnline: true,
+        isOnline: data['isOnline'],
         bio: data['bio']);
   }
 
@@ -42,6 +42,4 @@ class ProfileModel extends Profile {
       bio: map['bio'],
     );
   }
-
-  get photoURL => null;
 }
