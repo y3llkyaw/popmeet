@@ -413,6 +413,7 @@ class ProfilePage extends StatelessWidget {
                             baseColor: Colors.grey,
                             highlightColor: Colors.white24,
                             child: GridView.builder(
+                                key: const PageStorageKey("profile_posts"),
                                 itemCount: 30,
                                 gridDelegate:
                                     const SliverGridDelegateWithFixedCrossAxisCount(

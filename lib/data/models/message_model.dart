@@ -8,12 +8,13 @@ class MessageModel extends Message {
       required super.chatRoomId,
       required super.text,
       required super.createdAt,
+      required super.readParticipants,
       required super.participants});
 
   factory MessageModel.fromMap(DocumentSnapshot doc) {
     final map = doc.data() as Map<String, dynamic>;
-
     final message = MessageModel(
+      readParticipants: map['readParticipants'],
       messageId: map['messageId'],
       senderId: map['senderId'],
       chatRoomId: map['chatRoomId'],

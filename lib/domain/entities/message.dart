@@ -6,6 +6,8 @@ class Message {
   final String chatRoomId;
   final String text;
   final List<dynamic> participants;
+  final List<dynamic> readParticipants;
+
   final Timestamp createdAt;
 
   Message(
@@ -14,5 +16,6 @@ class Message {
       required this.chatRoomId,
       required this.text,
       required this.participants,
+      required this.readParticipants,
       required this.createdAt});
 }

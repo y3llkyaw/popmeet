@@ -5,6 +5,7 @@ class Post {
   final String userId;
   final String photoURL;
   final String content;
+  final List<dynamic> likes;
   final Timestamp create_at;
 
   Post(
@@ -12,6 +13,7 @@ class Post {
       required this.userId,
       required this.photoURL,
       required this.content,
+      required this.likes,
       required this.create_at});
 
   Post copyWith({
@@ -25,6 +27,7 @@ class Post {
       postId: postId ?? this.postId,
       userId: userId ?? this.userId,
       photoURL: photoURL ?? this.photoURL,
+      likes: likes ?? this.likes,
       content: content ?? this.content,
       create_at: this.create_at,
     );

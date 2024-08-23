@@ -15,7 +15,6 @@ class PeoplePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final profileBloc = BlocProvider.of<ProfileBloc>(context);
     final people = ProfileDatasource.getAllPeople();
-
     return Scaffold(
         body: RefreshIndicator(
       onRefresh: () async {
@@ -26,6 +25,7 @@ class PeoplePage extends StatelessWidget {
           stream: people,
           builder: (context, snapshot) {
             return ListView.builder(
+                key: const PageStorageKey("peoplepage"),
                 itemCount: snapshot.data?.length ?? 0,
                 itemBuilder: (context, index) {
                   if (snapshot.data![index].id ==
@@ -53,8 +53,8 @@ class PeoplePage extends StatelessWidget {
                           child: Hero(
                             tag: snapshot.data![index],
                             child: CircleAvatar(
-                              backgroundImage:
-                                  CachedNetworkImageProvider(snapshot.data![index].photoPath),
+                              backgroundImage: CachedNetworkImageProvider(
+                                  snapshot.data![index].photoPath),
                             ),
                           ),
                         ),

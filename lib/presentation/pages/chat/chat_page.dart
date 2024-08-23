@@ -81,95 +81,95 @@ class _ChatPageState extends State<ChatPage> {
                 child: StreamBuilder(
                   stream: MessageDatasource.getMessage(chatroom.join("_")),
                   builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return ListView.builder(
-                          itemCount: snapshot.data?.length ?? 0,
-                          controller: _scrollController,
-                          reverse: true,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: snapshot.data![index].senderId !=
-                                      FirebaseAuth.instance.currentUser!.uid
-                                  ? Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        CircleAvatar(
-                                          backgroundImage: NetworkImage(
-                                              widget.profile.photoPath),
-                                        ),
-                                        const SizedBox(
-                                          width: 20,
-                                        ),
-                                        Column(
-                                          children: [
-                                            Container(
-                                                padding:
-                                                    const EdgeInsets.all(13),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 107, 188, 255),
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                ),
-                                                child: Text(snapshot
-                                                    .data![index].text)),
-                                            Text(
-                                                snapshot.data![index].createdAt
-                                                    .toDate()
-                                                    .toUtc()
-                                                    .toString()
-                                                    .substring(8, 16),
+                    return ListView.builder(
+                        key: const PageStorageKey("chat"),
+                        itemCount: snapshot.data?.length ?? 0,
+                        controller: _scrollController,
+                        reverse: true,
+                        itemBuilder: (context, index) {
+                          if (!snapshot.data![index].readParticipants.contains(
+                              FirebaseAuth.instance.currentUser!.uid)) {
+                            MessageDatasource.updateReadParticipants(
+                                snapshot.data![index].messageId,
+                                snapshot.data![index].readParticipants);
+                          }
+                          return Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: snapshot.data![index].senderId !=
+                                    FirebaseAuth.instance.currentUser!.uid
+                                ? Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                            widget.profile.photoPath),
+                                      ),
+                                      const SizedBox(
+                                        width: 20,
+                                      ),
+                                      Column(
+                                        children: [
+                                          Container(
+                                              padding: const EdgeInsets.all(13),
+                                              decoration: BoxDecoration(
+                                                color: const Color.fromARGB(
+                                                    255, 107, 188, 255),
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                              ),
+                                              child: Text(
+                                                  snapshot.data![index].text)),
+                                          Text(
+                                              snapshot.data![index].createdAt
+                                                  .toDate()
+                                                  .toUtc()
+                                                  .toString()
+                                                  .substring(8, 16),
+                                              style: const TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 10)),
+                                        ],
+                                      )
+                                    ],
+                                  )
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Container(
+                                              padding: const EdgeInsets.all(13),
+                                              decoration: BoxDecoration(
+                                                color: const Color.fromARGB(
+                                                    255, 107, 188, 255),
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                              ),
+                                              child: Text(
+                                                snapshot.data![index].text,
                                                 style: const TextStyle(
-                                                    color: Colors.grey,
-                                                    fontSize: 10)),
-                                          ],
-                                        )
-                                      ],
-                                    )
-                                  : Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          children: [
-                                            Container(
-                                                padding:
-                                                    const EdgeInsets.all(13),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 107, 188, 255),
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                ),
-                                                child: Text(
-                                                  snapshot.data![index].text,
-                                                  style: const TextStyle(
-                                                      fontSize: 15),
-                                                )),
-                                            Text(
-                                                snapshot.data![index].createdAt
-                                                    .toDate()
-                                                    .toUtc()
-                                                    .toString()
-                                                    .substring(8, 16),
-                                                style: const TextStyle(
-                                                    color: Colors.grey,
-                                                    fontSize: 10)),
-                                          ],
-                                        ),
-                                        const SizedBox(
-                                          width: 20,
-                                        ),
-                                      ],
-                                    ),
-                            );
-                          });
-                    } else {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+                                                    fontSize: 15),
+                                              )),
+                                          Text(
+                                              snapshot.data![index].createdAt
+                                                  .toDate()
+                                                  .toUtc()
+                                                  .toString()
+                                                  .substring(8, 16),
+                                              style: const TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 10)),
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        width: 20,
+                                      ),
+                                    ],
+                                  ),
+                          );
+                        });
                   },
                 ),
               ),
@@ -207,41 +207,6 @@ class _ChatPageState extends State<ChatPage> {
               ),
             ],
           )),
-
-      // bottomNavigationBar: SafeArea(
-      //   child: Container(
-      //     padding: const EdgeInsets.all(10),
-      //     child: Row(
-      //       children: [
-      //         Expanded(
-      //           child: TextField(
-      //             scrollPadding: EdgeInsets.symmetric(
-      //                 vertical: MediaQuery.of(context).viewInsets.bottom),
-      //             controller: message,
-      //             keyboardType: TextInputType.text,
-      //             textInputAction: TextInputAction.send,
-      //             decoration: InputDecoration(
-      //               hintText: 'Type a message',
-      //               border: OutlineInputBorder(
-      //                 borderRadius: BorderRadius.circular(10),
-      //               ),
-      //             ),
-      //           ),
-      //         ),
-      //         IconButton(
-      //           icon: const Icon(CupertinoIcons.paperplane_fill),
-      //           onPressed: () {
-      //             MessageDatasource.addMessage([
-      //               FirebaseAuth.instance.currentUser!.uid,
-      //               widget.profile.id
-      //             ], message.text);
-      //             message.clear();
-      //           },
-      //         ),
-      //       ],
-      //     ),
-      //   ),
-      // ),
     );
   }
 }

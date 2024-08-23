@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:popmeet/data/datasources/message_datasource.dart';
+import 'package:popmeet/domain/entities/message.dart';
 import 'package:popmeet/presentation/blocs/post/post_bloc.dart';
 import 'package:popmeet/presentation/blocs/profile/profile_bloc.dart';
 import 'package:popmeet/presentation/pages/chat/message_page.dart';
@@ -80,7 +82,6 @@ class _AppViewState extends State<AppView> {
         BlocBuilder<ProfileBloc, ProfileState>(
           bloc: profileBloc,
           builder: (context, state) {
-            print(state);
             if (state is ProfilesLoaded) {
               return SafeArea(
                   child: ProfilePage(
@@ -109,17 +110,37 @@ class _AppViewState extends State<AppView> {
             ),
             Transform(
               transform: Matrix4.translationValues(20, -15, 0),
-              child: const SizedBox(
-                height: 40,
-                width: 20,
-                child: CircleAvatar(
-                  backgroundColor: Colors.redAccent,
-                  child: Text(
-                    '1',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                ),
+              child: Container(
+                height: 22,
+                width: 22,
+                child: StreamBuilder<List<Message>?>(
+                    stream: MessageDatasource.getUserMessage(),
+                    builder: (context, snapshot) {
+                      int count = 0;
+                      if (snapshot.data != null) {
+                        for (var message in snapshot.data!) {
+                          if (message.readParticipants.contains(
+                              FirebaseAuth.instance.currentUser!.uid)) {
+                            continue;
+                          } else {
+                            print(message.readParticipants);
+                            count++;
+                          }
+                        }
+                      }
+                      return count > 0
+                          ? CircleAvatar(
+                              backgroundColor: Colors.redAccent,
+                              child: Text(
+                                count.toString(),
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13),
+                              ),
+                            )
+                          : Container();
+                    }),
               ),
             ),
           ],

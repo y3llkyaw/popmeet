@@ -30,8 +30,10 @@ class HomePage2 extends StatelessWidget {
           return Future.delayed(const Duration(milliseconds: 100));
         },
         child: CustomScrollView(
+          key: const PageStorageKey("homepage2"),
           slivers: [
             SliverAppBar(
+              automaticallyImplyLeading: false,
               elevation: 0,
               shadowColor: Colors.white,
               surfaceTintColor: Colors.white,
@@ -88,6 +90,7 @@ class HomePage2 extends StatelessWidget {
                 if (state is PostLoadedSuccess) {
                   List<Post>? posts = state.posts;
                   return SliverList.builder(
+                      key: const PageStorageKey("homepage"),
                       itemCount: state.posts?.length ?? 0,
                       itemBuilder: (context, index) {
                         if (posts == null) {

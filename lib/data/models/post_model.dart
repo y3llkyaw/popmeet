@@ -6,6 +6,7 @@ class PostModel extends Post {
       {required super.userId,
       required super.photoURL,
       required super.content,
+      required super.likes,
       required super.create_at,
       required super.postId});
 
@@ -15,6 +16,7 @@ class PostModel extends Post {
       postId: doc.id,
       userId: map['uid'],
       photoURL: map['photoURL'],
+      likes: map['likes'],
       content: map['content'],
       create_at: map['created_at'],
     );

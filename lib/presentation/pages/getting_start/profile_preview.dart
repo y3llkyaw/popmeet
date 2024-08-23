@@ -23,9 +23,9 @@ class ProfilePreview extends StatelessWidget {
     return BlocListener<ProfileBloc, ProfileState>(
       listener: (context, state) {
         if (state is ProfileSuccess) {
-          Navigator.pop(context);
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => AppView()));
+          print('hello');
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => AppView()));
         }
         if (state is ProfileLoading) {
           showDialog(

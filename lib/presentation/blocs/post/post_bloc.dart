@@ -27,6 +27,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
           userId: FirebaseAuth.instance.currentUser!.uid,
           content: event.content,
           photoURL: event.photoURL,
+          likes: [],
           create_at: Timestamp.now(),
         );
         await _createPostUsecase.call(post);

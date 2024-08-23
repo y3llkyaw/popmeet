@@ -56,6 +56,7 @@ class _MessagePageState extends State<MessagePage> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return SliverList(
+                    key: const PageStorageKey("message"),
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
                         List<String> uids = [
@@ -75,50 +76,93 @@ class _MessagePageState extends State<MessagePage> {
                                             profile: snapshot.data![index])));
                               },
                               child: ListTile(
-                                  leading: CircleAvatar(
-                                    backgroundImage: CachedNetworkImageProvider(
-                                        snapshot.data![index].photoPath),
-                                  ),
-                                  title: Row(
-                                    children: [
-                                      Text(snapshot.data![index].name),
-                                      const Spacer(),
-                                      (!snapshot.data![index].isOnline)
-                                          ? Text(
-                                              timeago
-                                                  .format(
-                                                      snapshot.data![index]
-                                                          .lastOnline
-                                                          .toDate(),
-                                                      allowFromNow: true)
-                                                  .toString(),
-                                              style: const TextStyle(
-                                                  fontSize: 10,
-                                                  color: Colors.pink),
-                                            )
-                                          : const Text(
-                                              "online",
-                                              style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: Colors.pink),
-                                            )
-                                    ],
-                                  ),
-                                  subtitle: StreamBuilder(
-                                      stream: MessageDatasource.getMessage(
-                                          chatRoomId),
-                                      builder: (context, snapshot) {
-                                        if (snapshot.hasData) {
-                                          return Text(snapshot
-                                                      .data!.first.senderId ==
+                                leading: CircleAvatar(
+                                  backgroundImage: CachedNetworkImageProvider(
+                                      snapshot.data![index].photoPath),
+                                ),
+                                title: Row(
+                                  children: [
+                                    Text(snapshot.data![index].name),
+                                    const Spacer(),
+                                    (!snapshot.data![index].isOnline)
+                                        ? Text(
+                                            timeago
+                                                .format(
+                                                    snapshot
+                                                        .data![index].lastOnline
+                                                        .toDate(),
+                                                    allowFromNow: true)
+                                                .toString(),
+                                            style: const TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.pink),
+                                          )
+                                        : const Text(
+                                            "online",
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.pink),
+                                          )
+                                  ],
+                                ),
+                                subtitle: StreamBuilder(
+                                    stream: MessageDatasource.getMessage(
+                                        chatRoomId),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        return Text(
+                                          snapshot.data!.first.senderId ==
                                                   FirebaseAuth
                                                       .instance.currentUser!.uid
                                               ? "you: ${snapshot.data!.first.text}"
-                                              : snapshot.data!.first.text);
+                                              : snapshot.data!.first.text,
+                                          style: TextStyle(
+                                              fontWeight: snapshot.data!.first
+                                                      .readParticipants
+                                                      .contains(FirebaseAuth
+                                                          .instance
+                                                          .currentUser!
+                                                          .uid)
+                                                  ? FontWeight.normal
+                                                  : FontWeight.bold),
+                                        );
+                                      } else {
+                                        return const Text("No Message");
+                                      }
+                                    }),
+                                trailing: StreamBuilder(
+                                    stream: MessageDatasource.getMessage(
+                                        chatRoomId),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        int count = 0;
+                                        snapshot.data!.forEach((element) {
+                                          if (!element.readParticipants
+                                              .contains(FirebaseAuth
+                                                  .instance.currentUser!.uid)) {
+                                            count++;
+                                          }
+                                        });
+                                        if (count > 0) {
+                                          return SizedBox(
+                                            height: 25,
+                                            width: 25,
+                                            child: CircleAvatar(
+                                                backgroundColor: Colors.pink,
+                                                child: Text(
+                                                  count.toString(),
+                                                  style: const TextStyle(
+                                                      color: Colors.white),
+                                                )),
+                                          );
                                         } else {
-                                          return const Text("No Message");
+                                          return const Text("");
                                         }
-                                      })),
+                                      } else {
+                                        return const Text("No Message");
+                                      }
+                                    }),
+                              ),
                             ));
                       },
                       childCount: snapshot.data?.length ?? 0,

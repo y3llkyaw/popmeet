@@ -18,7 +18,6 @@ class MessageDatasource {
           .map((snapshot) {
         final messagesModels = snapshot.docs.map((snapshot) {
           final messages = MessageModel.fromMap(snapshot);
-
           return messages;
         }).toList();
         return messagesModels;
@@ -67,6 +66,7 @@ class MessageDatasource {
         'chatRoomId': chatRoom,
         'text': message,
         'participants': chatRoomId,
+        'readParticipants': [FirebaseAuth.instance.currentUser?.uid],
         'createdAt': Timestamp.now(),
       });
 
@@ -93,5 +93,18 @@ class MessageDatasource {
       }
       yield profiles;
     });
+  }
+
+  static Future<void> updateReadParticipants(
+      String messageId, List<dynamic> readParticipants) async {
+    if (FirebaseAuth.instance.currentUser?.uid != null) {
+      readParticipants.add(FirebaseAuth.instance.currentUser?.uid);
+      await FirebaseFirestore.instance
+          .collection('messages')
+          .doc(messageId)
+          .update({
+        'readParticipants': readParticipants,
+      });
+    }
   }
 }

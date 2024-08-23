@@ -1,21 +1,50 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:popmeet/data/datasources/post_datasource.dart';
 import 'package:popmeet/data/datasources/profile_datasource.dart';
+import 'package:popmeet/data/models/comment_model.dart';
+import 'package:popmeet/data/models/post_model.dart';
 import 'package:popmeet/domain/entities/post.dart';
 import 'package:popmeet/domain/entities/profile.dart';
 import 'package:popmeet/presentation/pages/home/profile_page.dart';
 import 'package:popmeet/presentation/pages/post/postDetail.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class PostComponent extends StatelessWidget {
+class PostComponent extends StatefulWidget {
   final Post post;
-  const PostComponent({super.key, required this.post});
+  final bool? showDetail;
+
+  const PostComponent({super.key, required this.post, this.showDetail});
+
+  @override
+  State<PostComponent> createState() => _PostComponentState();
+}
+
+class _PostComponentState extends State<PostComponent> {
+  bool isLiked = false;
+  bool isCommenting = false;
+  TextEditingController commentController = TextEditingController();
+
+  @override
+  void dispose() {
+    commentController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     Profile? profile;
+    bool showDetail = false;
+    if (widget.showDetail == true) {
+      showDetail = true;
+      isCommenting = true;
+    }
+    if (widget.post.likes.contains(FirebaseAuth.instance.currentUser!.uid)) {
+      isLiked = true;
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Container(
@@ -33,15 +62,16 @@ class PostComponent extends StatelessWidget {
                 padding: const EdgeInsets.all(5),
                 decoration: BoxDecoration(color: Colors.grey.shade300),
                 child: FutureBuilder(
-                    future: ProfileDatasource.getProfileById(post.userId),
+                    future:
+                        ProfileDatasource.getProfileById(widget.post.userId),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         profile = snapshot.data;
                         return Row(
                           children: [
                             SizedBox(
-                              height: 30,
-                              width: 30,
+                              height: showDetail ? 50 : 30,
+                              width: showDetail ? 50 : 30,
                               child: InkWell(
                                 onTap: () {
                                   Navigator.push(
@@ -87,16 +117,16 @@ class PostComponent extends StatelessWidget {
                                                   ),
                                                 )));
                                   },
-                                style: const TextStyle(
+                                style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 13,
+                                    fontSize: showDetail ? 15 : 13,
                                     color: Colors.black),
                               ),
                             ),
                             const Spacer(),
                             Text(
                               timeago
-                                  .format(post.create_at.toDate(),
+                                  .format(widget.post.create_at.toDate(),
                                       allowFromNow: true)
                                   .toString(),
                               style: const TextStyle(fontSize: 10),
@@ -125,7 +155,7 @@ class PostComponent extends StatelessWidget {
                       PageRouteBuilder(
                         pageBuilder: (context, animation, secondaryAnimation) =>
                             PostDetail(
-                          post: post,
+                          post: widget.post,
                           profile: profile,
                         ),
                         transitionsBuilder:
@@ -134,19 +164,19 @@ class PostComponent extends StatelessWidget {
                         },
                         transitionDuration: const Duration(
                             milliseconds:
-                                500), // Set your desired duration here
+                                800), // Set your desired duration here
                       ),
                     );
                   },
                   child: Hero(
-                    tag: post,
+                    tag: widget.post,
                     child: Container(
                       height: (MediaQuery.of(context).size.height / 2) - 20,
                       decoration: BoxDecoration(
                           image: DecorationImage(
                               fit: BoxFit.cover,
                               image: CachedNetworkImageProvider(
-                                post.photoURL,
+                                widget.post.photoURL,
                                 errorListener: (p0) {
                                   print(p0);
                                 },
@@ -161,7 +191,7 @@ class PostComponent extends StatelessWidget {
                   ),
                   padding: const EdgeInsets.only(left: 10, bottom: 10),
                   child: Text(
-                    post.content,
+                    widget.post.content,
                     style: const TextStyle(color: Colors.white),
                   ),
                 ),
@@ -173,15 +203,141 @@ class PostComponent extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
+                  Stack(
+                    alignment: Alignment.topRight,
+                    children: [
+                      IconButton(
+                          onPressed: () async {
+                            setState(() {
+                              if (!isLiked) {
+                                isLiked = true;
+                              } else {
+                                isLiked = false;
+                              }
+                            });
+                            await PostDatasource.likePost(widget.post);
+                          },
+                          icon: isLiked
+                              ? const Icon(
+                                  CupertinoIcons.heart_fill,
+                                  color: Colors.pink,
+                                )
+                              : const Icon(CupertinoIcons.heart)),
+                      InkWell(
+                        onTap: () {
+                          print("likes counts");
+                        },
+                        child: CircleAvatar(
+                            radius: 10,
+                            backgroundColor: Colors.pinkAccent,
+                            child: StreamBuilder<PostModel?>(
+                                stream: PostDatasource.getPostById(widget.post),
+                                builder: (context, snapshot) {
+                                  return Text(
+                                    snapshot.data?.likes.length.toString() ??
+                                        '0',
+                                    style: const TextStyle(
+                                        fontSize: 10, color: Colors.white),
+                                  );
+                                })),
+                      ),
+                    ],
+                  ),
                   IconButton(
-                      onPressed: () {}, icon: const Icon(CupertinoIcons.heart)),
-                  IconButton(
-                      onPressed: () {},
-                      icon: const Icon(CupertinoIcons.conversation_bubble)),
+                      onPressed: () {
+                        setState(() {
+                          if (!isCommenting) {
+                            isCommenting = true;
+                          } else {
+                            isCommenting = false;
+                          }
+                        });
+                      },
+                      icon: Icon(
+                        isCommenting
+                            ? CupertinoIcons.chat_bubble_fill
+                            : CupertinoIcons.chat_bubble,
+                        color: isCommenting ? Colors.green : Colors.black,
+                      )),
                   IconButton(
                       onPressed: () {}, icon: const Icon(CupertinoIcons.share)),
                 ],
               ),
+            ),
+            Visibility(
+              visible: isCommenting,
+              child: Column(children: [
+                Container(
+                  color: Colors.grey.shade300,
+                  child: StreamBuilder<List<CommentModel>?>(
+                      stream: PostDatasource.getComments(widget.post),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return Column(
+                            children: [
+                              for (var comment in snapshot.data!)
+                                FutureBuilder(
+                                    future: ProfileDatasource.getProfileById(
+                                        comment.uid),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        return ListTile(
+                                          leading: CircleAvatar(
+                                            backgroundImage:
+                                                CachedNetworkImageProvider(
+                                                    snapshot.data!.photoPath),
+                                          ),
+                                          title: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(snapshot.data!.name),
+                                              Text(
+                                                timeago
+                                                    .format(
+                                                        comment.timestamp
+                                                            .toDate(),
+                                                        allowFromNow: true)
+                                                    .toString(),
+                                                style: const TextStyle(
+                                                    fontSize: 10),
+                                              )
+                                            ],
+                                          ),
+                                          subtitle: Text(comment.comment),
+                                        );
+                                      }
+                                      return Container();
+                                    })
+                            ],
+                          );
+                        } else if (snapshot.hasError) {
+                          print(snapshot.error);
+                        }
+
+                        return Container();
+                      }),
+                ),
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Expanded(
+                    child: TextField(
+                      controller: commentController,
+                      decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.all(20),
+                        border: InputBorder.none,
+                        hintText: 'Add a comment...',
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                      onPressed: () async {
+                        await PostDatasource.commentPost(
+                            commentController.text, widget.post);
+                        commentController.clear();
+                      },
+                      icon: const Icon(CupertinoIcons.paperplane))
+                ]),
+              ]),
             )
           ],
         ),
