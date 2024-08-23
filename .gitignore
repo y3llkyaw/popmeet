@@ -9,7 +9,7 @@
 .history
 .svn/
 migrate_working_dir/
-
+firebase_*.dart
 # IntelliJ related
 *.iml
 *.ipr
@@ -41,3 +41,5 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+
